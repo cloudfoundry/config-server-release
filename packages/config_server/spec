@@ -1,0 +1,8 @@
+---
+name: config_server
+
+dependencies:
+  - golang
+files:
+  - github.com/cloudfoundry/config-server/**/*.go
+  - github.com/cloudfoundry/config-server/vendor/**/*
