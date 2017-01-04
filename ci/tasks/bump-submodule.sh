@@ -19,4 +19,4 @@ if [[ $(git diff-index HEAD) ]]; then
 fi
 
 cd ..
-cp -R config-server-release output
+cp -R config-server-release config-server-repo
