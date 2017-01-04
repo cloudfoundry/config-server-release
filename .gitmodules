@@ -1,3 +1,4 @@
 [submodule "src/config-server"]
 	path = src/github.com/cloudfoundry/config-server
 	url = https://github.com/cloudfoundry/config-server.git
+	branch = master

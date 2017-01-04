@@ -11,7 +11,7 @@ inputs:
 - name: bosh-cli
 
 outputs:
-- name: bosh-release
+- name: config-server-repo
 
 run:
-  path: config-server-release/ci/tasks/bump-and-build-bosh-release.sh
+  path: config-server-release/ci/tasks/bump-submodule.sh
