@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e -x
 
 install bosh-cli/bosh-cli* /usr/local/bin/bosh
