@@ -4,8 +4,8 @@ set -e -x
 install bosh-cli/bosh-cli* /usr/local/bin/bosh
 
 cd config-server-release
-git checkout develop
-git branch -u origin/develop
+git checkout master
+git branch -u origin/master
 
 git submodule update --remote # pull in submodule changes, branch defined in .gitmodules
 
