@@ -2,7 +2,7 @@
 
 Concourse Job  | Status
 -------------- | -------------
-BOSH Release   | [![bosh-ci.cf-app.com](https://main.bosh-ci.cf-app.com/api/v1/teams/main/pipelines/config-server/jobs/bosh-release/badge)](https://main.bosh-ci.cf-app.com/api/v1/teams/main/pipelines/config-server/jobs/bosh-release)
+BOSH Release   | [![bosh-ci.cf-app.com](https://main.bosh-ci.cf-app.com/api/v1/teams/main/pipelines/config-server/jobs/build-bosh-release/badge)](https://main.bosh-ci.cf-app.com/api/v1/teams/main/pipelines/config-server/jobs/build-bosh-release)
 
 * CI: <https://main.bosh-ci.cf-app.com/teams/main/pipelines/config-server>
 
