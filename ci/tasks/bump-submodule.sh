@@ -11,6 +11,7 @@ git checkout master
 git branch -u origin/master
 
 pushd src/github.com/cloudfoundry/config-server
+git fetch
 git checkout $CONFIG_SERVER_SHA
 popd
 
