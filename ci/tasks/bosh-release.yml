@@ -9,6 +9,7 @@ image_resource:
 inputs:
 - name: config-server-release
 - name: bosh-cli
+- name: config-server
 
 outputs:
 - name: bosh-release
