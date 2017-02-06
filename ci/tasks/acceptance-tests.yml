@@ -1,0 +1,29 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: bosh/main-ruby-go
+
+inputs:
+- name: config-server-release
+- name: bosh-cli
+- name: bosh-deployment
+- name: bosh-release
+
+run:
+  path: config-server-release/ci/tasks/acceptance-tests.sh
+
+params:
+  internal_cidr: replace-me
+  internal_gw: replace-me
+  internal_ip: replace-me
+  access_key_id: replace-me
+  secret_access_key: replace-me
+  region: replace-me
+  az: replace-me
+  default_key_name: replace-me
+  default_security_groups: replace-me
+  subnet_id: replace-me
+  private_key: replace-me
