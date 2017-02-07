@@ -14,7 +14,10 @@ chruby "2.3.1"
 wget "https://s3.amazonaws.com/config-server-acceptance-test-dependencies/bosh-260.6-ubuntu-trusty-3312-compiled-release.tgz" -O /tmp/compiled_bosh_release
 
 printenv private_key > private_key.pem
+printenv access_key_id > access_key_id
+printenv secret_access_key > secret_access_key
 
+echo "Deploying director..."
 bosh create-env ./bosh.yml \
   -o ./aws/cpi.yml \
   -o uaa.yml \
@@ -26,16 +29,17 @@ bosh create-env ./bosh.yml \
   -v internal_cidr=${internal_cidr} \
   -v internal_gw=${internal_gw} \
   -v internal_ip=${internal_ip} \
-  -v access_key_id=${access_key_id} \
-  -v secret_access_key=${secret_access_key} \
   -v region=${region} \
   -v az=${az} \
   -v default_key_name=${default_key_name} \
   -v default_security_groups=${default_security_groups} \
   -v subnet_id=${subnet_id} \
+  --var-file access_key_id=./access_key_id \
+  --var-file secret_access_key=./secret_access_key \
   --var-file private_key=./private_key.pem
 
 if [[ $? -eq 0 ]]; then 
+	echo "Deleting director"
 	bosh delete-env ./bosh.yml \
 	  -o ./aws/cpi.yml \
 	  -o uaa.yml \
@@ -47,13 +51,13 @@ if [[ $? -eq 0 ]]; then
 	  -v internal_cidr=${internal_cidr} \
 	  -v internal_gw=${internal_gw} \
 	  -v internal_ip=${internal_ip} \
-	  -v access_key_id=${access_key_id} \
-	  -v secret_access_key=${secret_access_key} \
 	  -v region=${region} \
 	  -v az=${az} \
 	  -v default_key_name=${default_key_name} \
 	  -v default_security_groups=${default_security_groups} \
 	  -v subnet_id=${subnet_id} \
+	  --var-file access_key_id=./access_key_id \
+	  --var-file secret_access_key=./secret_access_key \
 	  --var-file private_key=./private_key.pem
 else
 	echo "Director failed to come up successfully"
