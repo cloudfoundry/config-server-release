@@ -1,0 +1,21 @@
+name: config-server
+version: 0.0.1
+commit_hash: 0b4bd47
+uncommitted_changes: false
+jobs:
+- name: config_server
+  version: c33dee3c8bfd65e2d8992507bcbf1a6d474965dd
+  fingerprint: c33dee3c8bfd65e2d8992507bcbf1a6d474965dd
+  sha1: 978680bc89f452c653ccff5ed663d3de9e1fc655
+packages:
+- name: config_server
+  version: f8898fa00fd4229899f2050712c943756dbd544c
+  fingerprint: f8898fa00fd4229899f2050712c943756dbd544c
+  sha1: d9dcbb42523df88049640893adc2504467d36366
+  dependencies:
+  - golang
+- name: golang
+  version: 337f1781927dfb899b732b517c3858b6d3a1a6da
+  fingerprint: 337f1781927dfb899b732b517c3858b6d3a1a6da
+  sha1: 00fa1214cd516b2c185e9bdfcbf9af042d16a653
+  dependencies: []
