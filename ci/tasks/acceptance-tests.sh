@@ -13,9 +13,9 @@ echo "Setting up ruby"
 source /etc/profile.d/chruby.sh
 chruby "2.3.1"
 
-# v260.5
+# v263.1
 echo "Downloading compiled bosh release"
-wget "https://s3.amazonaws.com/config-server-acceptance-test-dependencies/bosh-260.6-ubuntu-trusty-3312-compiled-release.tgz" -O /tmp/compiled_bosh_release
+wget "https://s3.amazonaws.com/config-server-acceptance-test-dependencies/bosh-263.1.0-ubuntu-trusty-3445.7-compiled-release.tgz" -O /tmp/compiled_bosh_release
 
 echo "Writing private key"
 printenv private_key > private_key.pem
