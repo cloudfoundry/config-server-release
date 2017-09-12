@@ -24,11 +24,13 @@ echo "Deploying director..."
 bosh create-env ./bosh.yml \
   -o ./aws/cpi.yml \
   -o uaa.yml \
+  -o external-ip-not-recommended.yml \
   -o config-server.yml \
   -o ../config-server-release/ci/tasks/compiled_releases.yml \
   --state ./state.json \
   --vars-store ./creds.yml \
   -v director_name=bosh \
+  -v external_ip=${external_ip} \
   -v internal_cidr=${internal_cidr} \
   -v internal_gw=${internal_gw} \
   -v internal_ip=${internal_ip} \
@@ -42,28 +44,30 @@ bosh create-env ./bosh.yml \
   --var-file private_key=./private_key.pem
 
 if [[ $? -eq 0 ]]; then 
-	echo "Deleting director"
-	bosh delete-env ./bosh.yml \
-	  -o ./aws/cpi.yml \
-	  -o uaa.yml \
-	  -o config-server.yml \
-	  -o ../config-server-release/ci/tasks/compiled_releases.yml \
-	  --state ./state.json \
-	  --vars-store ./creds.yml \
-	  -v director_name=bosh \
-	  -v internal_cidr=${internal_cidr} \
-	  -v internal_gw=${internal_gw} \
-	  -v internal_ip=${internal_ip} \
-	  -v region=${region} \
-	  -v az=${az} \
-	  -v default_key_name=${default_key_name} \
-	  -v default_security_groups=${default_security_groups} \
-	  -v subnet_id=${subnet_id} \
-	  -v access_key_id=${access_key_id} \
-	  -v secret_access_key=${secret_access_key} \
-	  --var-file private_key=./private_key.pem
+  echo "Deleting director"
+  bosh delete-env ./bosh.yml \
+    -o ./aws/cpi.yml \
+    -o uaa.yml \
+    -o external-ip-not-recommended.yml \
+    -o config-server.yml \
+    -o ../config-server-release/ci/tasks/compiled_releases.yml \
+    --state ./state.json \
+    --vars-store ./creds.yml \
+    -v director_name=bosh \
+    -v external_ip=${external_ip} \
+    -v internal_cidr=${internal_cidr} \
+    -v internal_gw=${internal_gw} \
+    -v internal_ip=${internal_ip} \
+    -v region=${region} \
+    -v az=${az} \
+    -v default_key_name=${default_key_name} \
+    -v default_security_groups=${default_security_groups} \
+    -v subnet_id=${subnet_id} \
+    -v access_key_id=${access_key_id} \
+    -v secret_access_key=${secret_access_key} \
+    --var-file private_key=./private_key.pem
 else
-	echo "Director failed to come up successfully"
+  echo "Director failed to come up successfully"
 fi
 
 popd

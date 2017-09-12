@@ -16,6 +16,7 @@ run:
   path: config-server-release/ci/tasks/acceptance-tests.sh
 
 params:
+  external_ip: replace-me
   internal_cidr: replace-me
   internal_gw: replace-me
   internal_ip: replace-me
