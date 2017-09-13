@@ -24,7 +24,8 @@ echo "Deploying director..."
 bosh create-env ./bosh.yml \
   -o ./aws/cpi.yml \
   -o uaa.yml \
-  -o external-ip-not-recommended.yml \
+  -o external-ip-with-registry-not-recommended.yml \
+  -o external-ip-not-recommended-uaa.yml \
   -o config-server.yml \
   -o ../config-server-release/ci/tasks/compiled_releases.yml \
   --state ./state.json \
@@ -48,7 +49,8 @@ if [[ $? -eq 0 ]]; then
   bosh delete-env ./bosh.yml \
     -o ./aws/cpi.yml \
     -o uaa.yml \
-    -o external-ip-not-recommended.yml \
+    -o external-ip-with-registry-not-recommended.yml \
+    -o external-ip-not-recommended-uaa.yml \
     -o config-server.yml \
     -o ../config-server-release/ci/tasks/compiled_releases.yml \
     --state ./state.json \
