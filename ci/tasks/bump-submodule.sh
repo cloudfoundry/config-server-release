@@ -12,7 +12,7 @@ git branch -u origin/master
 
 pushd src/github.com/cloudfoundry/config-server
 git fetch
-git checkout $CONFIG_SERVER_SHA
+git checkout -f $CONFIG_SERVER_SHA
 popd
 
 git config --global user.email "submoduleupdate@localhost" 
