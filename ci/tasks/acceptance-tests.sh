@@ -27,7 +27,7 @@ bosh create-env ./bosh.yml \
   -o external-ip-with-registry-not-recommended.yml \
   -o external-ip-not-recommended-uaa.yml \
   -o jumpbox-user.yml \
-  -o config-server.yml \
+  -o misc/config-server.yml \
   -o ../config-server-release/ci/tasks/compiled_releases.yml \
   --state ./state.json \
   --vars-store ./creds.yml \
@@ -53,7 +53,7 @@ if [[ $? -eq 0 ]]; then
     -o external-ip-with-registry-not-recommended.yml \
     -o external-ip-not-recommended-uaa.yml \
     -o jumpbox-user.yml \
-    -o config-server.yml \
+    -o misc/config-server.yml \
     -o ../config-server-release/ci/tasks/compiled_releases.yml \
     --state ./state.json \
     --vars-store ./creds.yml \
