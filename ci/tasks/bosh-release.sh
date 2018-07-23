@@ -3,10 +3,17 @@ set -e -x
 
 install bosh-cli/bosh-cli* /usr/local/bin/bosh
 
-cd config-server-release
+cd config-server
+config_server_sha=$(git rev-parse --verify HEAD)
+cd -
 
-rm -rf src/github.com/cloudfoundry/config-server
-ln -s ../../../../config-server src/github.com/cloudfoundry/config-server
+
+cd config-server-release
+git submodule update --init --recursive
+
+cd src/github.com/cloudfoundry/config-server
+git checkout "${config_server_sha}"
+cd -
 
 bosh create-release --force --tarball=./config-server-release.tgz --name config-server --version acceptance
 
