@@ -1,9 +1,9 @@
 # abort script on any command that exits with a non zero value
 set -e -x
 
-export GOROOT=$(readlink -nf /var/vcap/packages/golang-1.17-linux)
+export GOROOT=$(readlink -nf /var/vcap/packages/golang-1-linux)
 export GOPATH=$PWD
-export GOCACHE=/var/vcap/data/golang-1.17-linux/cache
+export GOCACHE=/var/vcap/data/golang-1-linux/cache
 export PATH=$GOROOT/bin:$PATH
 
 mkdir $BOSH_INSTALL_TARGET/bin

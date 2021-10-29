@@ -2,7 +2,7 @@
 name: config_server
 
 dependencies:
-  - golang-1.17-linux
+  - golang-1-linux
 files:
   - github.com/cloudfoundry/config-server/**/*.go
   - github.com/cloudfoundry/config-server/vendor/**/*
