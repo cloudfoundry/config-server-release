@@ -1,6 +1,6 @@
 ---
 final_name: config-server
 blobstore:
-  provider: s3
+  provider: gcs
   options:
     bucket_name: config-server-blobs
