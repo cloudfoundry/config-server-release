@@ -7,3 +7,8 @@ BOSH Release   | [![bosh-ci.cf-app.com](https://main.bosh-ci.cf-app.com/api/v1/t
 * CI: <https://main.bosh-ci.cf-app.com/teams/main/pipelines/config-server>
 
 See [bosh-notes](https://github.com/cloudfoundry/bosh-notes/blob/master/config-server.md) for more information
+
+## Runtime requirements
+
+The `config_server` job is managed by [BPM](https://github.com/cloudfoundry/bpm-release).
+The `bpm` job **must** be colocated in the same instance group as `config_server`.
