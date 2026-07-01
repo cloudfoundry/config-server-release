@@ -7,10 +7,11 @@ image_resource:
     repository: bosh/main-bosh-docker
 
 inputs:
-- name: config-server-release
+- name: config-server
+- name: config-server-ci
 - name: bosh-cli
 - name: bosh-deployment
 - name: bosh-release
 
 run:
-  path: config-server-release/ci/tasks/acceptance-tests.sh
+  path: config-server-ci/ci/tasks/acceptance-tests.sh

@@ -8,7 +8,7 @@ config_server_sha=$(git rev-parse --verify HEAD)
 cd -
 
 
-cd config-server-release
+cd config-server
 git submodule update --init --recursive
 
 cd src/github.com/cloudfoundry/config-server

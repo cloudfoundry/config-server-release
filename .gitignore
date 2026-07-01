@@ -1,3 +1,6 @@
+.DS_Store
+.idea
+
 blobs
 config/private.yml
 dev_releases
@@ -7,9 +10,3 @@ releases/**/*.tgz
 .final_builds/jobs/**/*.tgz
 .final_builds/packages/**/*.tgz
 *.coverprofile
-.DS_Store
-.idea
-*.swp
-*~
-*#
-#*

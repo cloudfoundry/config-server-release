@@ -7,7 +7,8 @@ image_resource:
     repository: golang
 
 inputs:
-- name: config-server-release
+- name: config-server
+- name: config-server-ci
 - name: bosh-cli
 - name: config-server
 
@@ -15,4 +16,4 @@ outputs:
 - name: bosh-release
 
 run:
-  path: config-server-release/ci/tasks/bosh-release.sh
+  path: config-server-ci/ci/tasks/bosh-release.sh

@@ -1,0 +1,12 @@
+---
+platform: linux
+
+inputs:
+- name: config-server
+
+params:
+  GOOS:
+  GOARCH:
+
+run:
+  path: config-server-ci/ci/tasks/build.sh
