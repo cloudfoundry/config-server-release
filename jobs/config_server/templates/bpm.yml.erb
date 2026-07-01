@@ -1,0 +1,5 @@
+processes:
+- name: config_server
+  executable: /var/vcap/packages/config_server/bin/config-server
+  args:
+  - /var/vcap/jobs/config_server/config/config.json

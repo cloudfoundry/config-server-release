@@ -1,14 +1,9 @@
-# abort script on any command that exits with a non zero value
 set -e -x
 
-export GOROOT=$(readlink -nf /var/vcap/packages/golang-1-linux)
-export GOPATH=$PWD
-export GOCACHE=/var/vcap/data/golang-1-linux/cache
-export PATH=$GOROOT/bin:$PATH
+source /var/vcap/packages/golang-1-linux/bosh/compile.env
 
-mkdir $BOSH_INSTALL_TARGET/bin
+mkdir -p $BOSH_INSTALL_TARGET/bin
 
-mkdir ../src && cp -a * ../src/ && mv ../src ./src
-
-# Compile config-server
-go build -o $BOSH_INSTALL_TARGET/bin/config-server github.com/cloudfoundry/config-server
+pushd github.com/cloudfoundry/config-server
+  go build -mod=vendor -o $BOSH_INSTALL_TARGET/bin/config-server .
+popd

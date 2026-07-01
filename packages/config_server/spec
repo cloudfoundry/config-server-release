@@ -5,4 +5,6 @@ dependencies:
   - golang-1-linux
 files:
   - github.com/cloudfoundry/config-server/**/*.go
+  - github.com/cloudfoundry/config-server/go.mod
+  - github.com/cloudfoundry/config-server/go.sum
   - github.com/cloudfoundry/config-server/vendor/**/*

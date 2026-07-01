@@ -1,7 +1,7 @@
 ---
 name: config_server
 templates:
-  ctl.erb: bin/ctl
+  bpm.yml.erb: config/bpm.yml
   config.json.erb: config/config.json
   cert.erb: config/cert
   key.erb: config/key
