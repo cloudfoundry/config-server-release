@@ -188,7 +188,7 @@ resources:
     type: git
     source:
       uri: git@github.com:cloudfoundry/config-server-release.git
-      branch: master
+      branch: main
       private_key: ((github_deploy_key_config-server.private_key))
       ignore_paths:
         - ci
@@ -197,7 +197,7 @@ resources:
     type: git
     source:
       uri: git@github.com:cloudfoundry/config-server-release.git
-      branch: master
+      branch: main
       private_key: ((github_deploy_key_config-server.private_key))
       paths:
         - ci
