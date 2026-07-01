@@ -3,7 +3,7 @@ platform: linux
 
 inputs:
 - name: config-server
-  path: config-server
+- name: config-server-ci
 
 run:
   path: config-server-ci/ci/tasks/lint.sh
