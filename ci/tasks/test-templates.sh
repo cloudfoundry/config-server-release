@@ -2,5 +2,5 @@
 set -eu -o pipefail
 
 cd config-server
-
-bin/lint
+bundle install
+bundle exec rspec

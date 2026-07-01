@@ -4,48 +4,36 @@ jobs:
     public: true
     plan:
       - in_parallel:
+          - get: config-server-ci
           - get: config-server
             trigger: true
           - get: golang-image
       - task: golangci-lint
-        file: config-server/ci/tasks/lint.yml
+        file: config-server-ci/ci/tasks/lint.yml
         image: golang-image
 
   - name: test-unit
     public: true
     plan:
       - in_parallel:
+          - get: config-server-ci
           - get: config-server
             trigger: true
           - get: golang-image
-          - get: config-server-release
-            trigger: true
           - get: ruby-image
       - in_parallel:
           - task: test-unit
-            file: config-server/ci/tasks/test-unit.yml
+            file: config-server-ci/ci/tasks/test-unit.yml
             image: golang-image
           - task: test-templates
+            file: config-server-ci/ci/tasks/test-template.yml
             image: ruby-image
-            config:
-              platform: linux
-              inputs:
-                - name: config-server-release
-              run:
-                path: bash
-                args:
-                  - -euo
-                  - pipefail
-                  - -c
-                  - |
-                    cd config-server-release
-                    bundle install
-                    bundle exec rspec
 
   - name: build
     public: true
     plan:
       - in_parallel:
+          - get: config-server-ci
           - get: config-server
             passed:
               - lint
@@ -53,7 +41,7 @@ jobs:
             trigger: true
           - get: golang-image
       - task: build-linux
-        file: config-server/ci/tasks/build.yml
+        file: config-server-ci/ci/tasks/build.yml
         image: golang-image
         params:
           GOOS: linux
@@ -63,6 +51,7 @@ jobs:
     public: true
     plan:
       - in_parallel:
+          - get: config-server-ci
           - get: config-server
             passed:
               - build
@@ -73,19 +62,19 @@ jobs:
       - in_parallel:
           - task: test-integration-in-memory
             image: bosh-integration-image
-            file: config-server/ci/tasks/test-integration.yml
+            file: config-server-ci/ci/tasks/test-integration.yml
             privileged: true
             params:
               DB: memory
           - task: test-integration-mysql
             image: bosh-integration-mysql-8-0-image
-            file: config-server/ci/tasks/test-integration.yml
+            file: config-server-ci/ci/tasks/test-integration.yml
             privileged: true
             params:
               DB: mysql
           - task: test-integration-postgresql
             image: bosh-integration-postgres-15-image
-            file: config-server/ci/tasks/test-integration.yml
+            file: config-server-ci/ci/tasks/test-integration.yml
             privileged: true
             params:
               DB: postgresql
@@ -95,16 +84,17 @@ jobs:
     public: true
     plan:
       - in_parallel:
+          - get: config-server-ci
           - get: config-server
             passed:
               - test-integration
           - get: bosh-integration-image
-      - task: test-templates
+      - task: create-release
         image: bosh-integration-image
         config:
           platform: linux
           inputs:
-            - name: config-server-release
+            - name: config-server
           run:
             path: bash
             args:
@@ -117,6 +107,7 @@ jobs:
   - name: bump-deps
     plan:
       - in_parallel:
+          - get: config-server-ci
           - get: config-server
           - get: golang-release
           - get: golang-image
@@ -131,17 +122,17 @@ jobs:
           output_repo: bumped-config-server
       - in_parallel:
           - task: golangci-lint
-            file: config-server/ci/tasks/lint.yml
+            file: config-server-ci/ci/tasks/lint.yml
             image: golang-image
             input_mapping:
               config-server: bumped-config-server
           - task: test-unit
-            file: config-server/ci/tasks/test-unit.yml
+            file: config-server-ci/ci/tasks/test-unit.yml
             image: golang-image
             input_mapping:
               config-server: bumped-config-server
           - task: test-integration-in-memory
-            file: config-server/ci/tasks/test-integration.yml
+            file: config-server-ci/ci/tasks/test-integration.yml
             image: bosh-integration-image
             privileged: true
             params:
@@ -196,16 +187,20 @@ resources:
   - name: config-server
     type: git
     source:
-      uri: git@github.com:cloudfoundry/config-server.git
-      branch: develop
+      uri: git@github.com:cloudfoundry/config-server-release.git
+      branch: master
       private_key: ((github_deploy_key_config-server.private_key))
+      ignore_paths:
+        - ci
 
-  - name: config-server-release
+  - name: config-server-ci
     type: git
     source:
       uri: git@github.com:cloudfoundry/config-server-release.git
       branch: master
       private_key: ((github_deploy_key_config-server.private_key))
+      paths:
+        - ci
 
   - name: golang-release
     type: git

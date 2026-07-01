@@ -1,9 +1,0 @@
----
-platform: linux
-
-inputs:
-- name: config-server
-  path: config-server
-
-run:
-  path: config-server/ci/tasks/test-unit.sh

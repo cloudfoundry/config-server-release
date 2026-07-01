@@ -9,4 +9,4 @@ params:
   GOARCH:
 
 run:
-  path: config-server/ci/tasks/build.sh
+  path: config-server-ci/ci/tasks/build.sh
