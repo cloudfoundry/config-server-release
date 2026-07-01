@@ -1,0 +1,221 @@
+---
+jobs:
+  - name: lint
+    public: true
+    plan:
+      - in_parallel:
+          - get: config-server
+            trigger: true
+          - get: golang-image
+      - task: golangci-lint
+        file: config-server/ci/tasks/lint.yml
+        image: golang-image
+
+  - name: test-unit
+    public: true
+    plan:
+      - in_parallel:
+          - get: config-server
+            trigger: true
+          - get: golang-image
+          - get: config-server-release
+            trigger: true
+          - get: ruby-image
+      - in_parallel:
+          - task: test-unit
+            file: config-server/ci/tasks/test-unit.yml
+            image: golang-image
+          - task: test-templates
+            image: ruby-image
+            config:
+              platform: linux
+              inputs:
+                - name: config-server-release
+              run:
+                path: bash
+                args:
+                  - -euo
+                  - pipefail
+                  - -c
+                  - |
+                    cd config-server-release
+                    bundle install
+                    bundle exec rspec
+
+  - name: build
+    public: true
+    plan:
+      - in_parallel:
+          - get: config-server
+            passed:
+              - lint
+              - test-unit
+            trigger: true
+          - get: golang-image
+      - task: build-linux
+        file: config-server/ci/tasks/build.yml
+        image: golang-image
+        params:
+          GOOS: linux
+          GOARCH: amd64
+
+  - name: test-integration
+    public: true
+    plan:
+      - in_parallel:
+          - get: config-server
+            passed:
+              - build
+            trigger: true
+          - get: bosh-integration-image
+          - get: bosh-integration-postgres-15-image
+          - get: bosh-integration-mysql-8-0-image
+      - in_parallel:
+          - task: test-integration-in-memory
+            image: bosh-integration-image
+            file: config-server/ci/tasks/test-integration.yml
+            privileged: true
+            params:
+              DB: memory
+          - task: test-integration-mysql
+            image: bosh-integration-mysql-8-0-image
+            file: config-server/ci/tasks/test-integration.yml
+            privileged: true
+            params:
+              DB: mysql
+          - task: test-integration-postgresql
+            image: bosh-integration-postgres-15-image
+            file: config-server/ci/tasks/test-integration.yml
+            privileged: true
+            params:
+              DB: postgresql
+              DB_VERSION: 15
+
+  - name: placeholder-create-release
+    public: true
+    plan:
+      - in_parallel:
+          - get: config-server
+            passed:
+              - test-integration
+          - get: bosh-integration-image
+      - task: test-templates
+        image: bosh-integration-image
+        config:
+          platform: linux
+          inputs:
+            - name: config-server-release
+          run:
+            path: bash
+            args:
+              - -euo
+              - pipefail
+              - -c
+              - |
+                echo "Nothing to see here"
+
+  - name: bump-deps
+    plan:
+      - in_parallel:
+          - get: config-server
+          - get: golang-release
+          - get: golang-image
+          - get: bosh-integration-image
+          - get: weekly
+            trigger: true
+      - task: bump-deps
+        file: golang-release/ci/tasks/shared/bump-deps.yml
+        input_mapping:
+          input_repo: config-server
+        output_mapping:
+          output_repo: bumped-config-server
+      - in_parallel:
+          - task: golangci-lint
+            file: config-server/ci/tasks/lint.yml
+            image: golang-image
+            input_mapping:
+              config-server: bumped-config-server
+          - task: test-unit
+            file: config-server/ci/tasks/test-unit.yml
+            image: golang-image
+            input_mapping:
+              config-server: bumped-config-server
+          - task: test-integration-in-memory
+            file: config-server/ci/tasks/test-integration.yml
+            image: bosh-integration-image
+            privileged: true
+            params:
+              DB: memory
+            input_mapping:
+              config-server: bumped-config-server
+      - put: config-server
+        params:
+          repository: bumped-config-server
+          rebase: true
+
+resources:
+  - name: bosh-integration-postgres-15-image
+    type: registry-image
+    source:
+      repository: ghcr.io/cloudfoundry/bosh/main-postgres-15
+      tag: main
+      username: ((github_read_write_packages.username))
+      password: ((github_read_write_packages.password))
+
+  - name: bosh-integration-mysql-8-0-image
+    type: registry-image
+    source:
+      repository: ghcr.io/cloudfoundry/bosh/main-mysql-8.0
+      tag: main
+      username: ((github_read_write_packages.username))
+      password: ((github_read_write_packages.password))
+
+  - name: bosh-integration-image
+    type: registry-image
+    source:
+      repository: ghcr.io/cloudfoundry/bosh/integration
+      tag: main
+      username: ((github_read_write_packages.username))
+      password: ((github_read_write_packages.password))
+
+  - name: golang-image
+    type: registry-image
+    source:
+      repository: golang
+      tag: latest
+      username: ((dockerhub_username))
+      password: ((dockerhub_password))
+
+  - name: ruby-image
+    type: registry-image
+    source:
+      repository: ruby
+      username: ((dockerhub_username))
+      password: ((dockerhub_password))
+
+  - name: config-server
+    type: git
+    source:
+      uri: git@github.com:cloudfoundry/config-server.git
+      branch: develop
+      private_key: ((github_deploy_key_config-server.private_key))
+
+  - name: config-server-release
+    type: git
+    source:
+      uri: git@github.com:cloudfoundry/config-server-release.git
+      branch: master
+      private_key: ((github_deploy_key_config-server.private_key))
+
+  - name: golang-release
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry/bosh-package-golang-release.git
+
+  - name: weekly
+    type: time
+    source:
+      initial_version: true
+      start: 3:00 -0700
+      stop: 4:30 -0700
+      days: [ Saturday ]
