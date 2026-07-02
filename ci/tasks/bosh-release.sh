@@ -11,7 +11,7 @@ cd -
 cd config-server
 git submodule update --init --recursive
 
-cd src/github.com/cloudfoundry/config-server
+cd src/config-server
 git checkout "${config_server_sha}"
 cd -
 

@@ -4,6 +4,6 @@ source /var/vcap/packages/golang-1-linux/bosh/compile.env
 
 mkdir -p $BOSH_INSTALL_TARGET/bin
 
-pushd github.com/cloudfoundry/config-server
+pushd config-server
   go build -mod=vendor -o $BOSH_INSTALL_TARGET/bin/config-server .
 popd

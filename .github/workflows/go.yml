@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v6
         with:
-          go-version-file: src/github.com/cloudfoundry/config-server/go.mod
+          go-version-file: src/config-server/go.mod
       - uses: golangci/golangci-lint-action@v9
         with:
-          working-directory: src/github.com/cloudfoundry/config-server/
+          working-directory: src/config-server/
