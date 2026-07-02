@@ -39,6 +39,6 @@ case "$DB" in
     exit 1
 esac
 
-cd config-server/src/github.com/cloudfoundry/config-server/
+cd config-server/src/config-server/
 
 bin/test-integration "${DB}"

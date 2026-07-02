@@ -138,7 +138,7 @@ jobs:
       - task: bump-deps
         file: golang-release/ci/tasks/shared/bump-deps.yml
         params:
-          SOURCE_PATH: src/github.com/cloudfoundry/config-server/
+          SOURCE_PATH: src/config-server/
         input_mapping:
           input_repo: config-server
         output_mapping:
