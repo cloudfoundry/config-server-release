@@ -1,0 +1,13 @@
+---
+platform: linux
+
+inputs:
+- name: config-server
+- name: config-server-ci
+- name: stemcell
+
+run:
+  path: config-server-ci/ci/tasks/test-release.sh
+
+params:
+  STEMCELL_OS: ubuntu-noble
