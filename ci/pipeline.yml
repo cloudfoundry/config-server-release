@@ -80,7 +80,7 @@ jobs:
               DB: postgresql
               DB_VERSION: 15
 
-  - name: placeholder-create-release
+  - name: test-release
     public: true
     plan:
       - in_parallel:
@@ -88,6 +88,25 @@ jobs:
           - get: config-server
             passed:
               - test-integration
+            trigger: true
+          - get: docker-cpi-image
+          - get: stemcell
+            resource: ubuntu-noble-stemcell
+      - task: test-release
+        file: config-server-ci/ci/tasks/test-release.yml
+        image: docker-cpi-image
+        privileged: true
+        params:
+          STEMCELL_OS: ubuntu-noble
+
+  - name: placeholder-create-release
+    public: true
+    plan:
+      - in_parallel:
+          - get: config-server-ci
+          - get: config-server
+            passed:
+              - test-release
           - get: bosh-integration-image
       - task: create-release
         image: bosh-integration-image
@@ -216,3 +235,23 @@ resources:
       start: 3:00 -0700
       stop: 4:30 -0700
       days: [ Saturday ]
+
+  - name: docker-cpi-image
+    type: registry-image
+    source:
+      repository: ghcr.io/cloudfoundry/bosh/docker-cpi
+      tag: main
+      username: ((github_read_write_packages.username))
+      password: ((github_read_write_packages.password))
+
+  - name: ubuntu-noble-stemcell
+    type: bosh-io-stemcell
+    source:
+      name: bosh-warden-boshlite-ubuntu-noble
+
+resource_types:
+  - name: bosh-io-stemcell
+    type: registry-image
+    source:
+      repository: foundationalinfrastructure/bosh-io-stemcell-resource
+      tag: v1.2.1
