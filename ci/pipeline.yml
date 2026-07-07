@@ -101,29 +101,211 @@ jobs:
         params:
           STEMCELL_OS: ubuntu-noble
 
-  - name: placeholder-create-release
-    public: true
+  - name: automatically-release-new-patch
+    serial_groups: [version]
     plan:
       - in_parallel:
-          - get: config-server-ci
           - get: config-server
-            passed:
-              - test-release
-          - get: bosh-integration-image
-      - task: create-release
-        image: bosh-integration-image
+            passed: [test-release]
+            trigger: true
+          - get: current-version
+            resource: release-version-semver
+          - get: patched-version
+            resource: release-version-semver
+            params:
+              bump: patch
+          - get: bosh-security-scanner-image
+          - get: bosh-shared-ci
+          - get: release-notes-branch
+            resource: release-notes
+      - try:
+          task: check-for-patched-cves
+          file: bosh-shared-ci/tasks/release/check-for-patched-cves.yml
+          image: bosh-security-scanner-image
+          input_mapping:
+            input_repo: config-server
+            version: current-version
+          params:
+            SEVERITY: CRITICAL,HIGH
+          on_success:
+            do:
+              - task: commit-release-notes
+                config:
+                  platform: linux
+                  image_resource:
+                    type: registry-image
+                    source:
+                      repository: alpine/git
+                      username: ((dockerhub_username))
+                      password: ((dockerhub_password))
+                  inputs:
+                    - name: release-notes
+                    - name: release-notes-branch
+                  outputs:
+                    - name: committed-release-notes
+                  run:
+                    path: sh
+                    args:
+                      - -c
+                      - |
+                        cp -r release-notes-branch/. committed-release-notes/
+                        cp release-notes/release-notes.md committed-release-notes/release-notes.md
+                        cd committed-release-notes
+                        git config user.email "bots@cloudfoundry.org"
+                        git config user.name "CI Bot"
+                        git add release-notes.md
+                        git diff --cached --quiet || git commit -m "Update release notes"
+              - put: release-notes
+                params:
+                  repository: committed-release-notes
+                  rebase: true
+              - put: release-version-semver
+                params:
+                  file: patched-version/version
+      - task: ensure-cve-checker-succeeded
+        file: bosh-shared-ci/tasks/release/ensure-task-succeeded.yml
+        image: bosh-security-scanner-image
+        input_mapping:
+          task-output-folder: patched_cves
+      - try:
+          task: check-for-updated-vendored-packages
+          file: bosh-shared-ci/tasks/release/check-for-updated-vendored-packages.yml
+          image: bosh-security-scanner-image
+          input_mapping:
+            input_repo: config-server
+            version: current-version
+          params:
+            PACKAGES: '["golang-1-linux"]'
+          on_success:
+            do:
+              - task: commit-release-notes
+                config:
+                  platform: linux
+                  image_resource:
+                    type: registry-image
+                    source:
+                      repository: alpine/git
+                      username: ((dockerhub_username))
+                      password: ((dockerhub_password))
+                  inputs:
+                    - name: release-notes
+                    - name: release-notes-branch
+                  outputs:
+                    - name: committed-release-notes
+                  run:
+                    path: sh
+                    args:
+                      - -c
+                      - |
+                        cp -r release-notes-branch/. committed-release-notes/
+                        cp release-notes/release-notes.md committed-release-notes/release-notes.md
+                        cd committed-release-notes
+                        git config user.email "bots@cloudfoundry.org"
+                        git config user.name "CI Bot"
+                        git add release-notes.md
+                        git diff --cached --quiet || git commit -m "Update release notes"
+              - put: release-notes
+                params:
+                  repository: committed-release-notes
+                  rebase: true
+              - put: release-version-semver
+                params:
+                  file: patched-version/version
+      - task: ensure-update-package-check-succeeded
+        file: bosh-shared-ci/tasks/release/ensure-task-succeeded.yml
+        image: bosh-security-scanner-image
+        input_mapping:
+          task-output-folder: package-updates
+
+  - name: promote-candidate
+    disable_manual_trigger: true
+    serial_groups: [version]
+    plan:
+      - in_parallel:
+          - get: config-server
+            passed: [test-release]
+          - get: release-version-semver
+            trigger: true
+          - get: release-notes
+          - get: bosh-shared-ci
+          - get: bosh-cli-image
+      - task: create-final-release
+        file: bosh-shared-ci/tasks/release/create-final-release.yml
+        image: bosh-cli-image
+        input_mapping:
+          release_repo: config-server
+          version: release-version-semver
+        params:
+          GIT_USER_NAME: CI Bot
+          GIT_USER_EMAIL: bots@cloudfoundry.org
+          PRIVATE_YML: |
+            ---
+            blobstore:
+              options:
+                credentials_source: static
+                json_key: '((gcp_json_key))'
+      - put: config-server
+        params:
+          repository: release_repo
+          rebase: true
+          tag: release_metadata/tag-name
+      - put: config-server-github-release
+        params:
+          name: release_metadata/version
+          tag: release_metadata/version
+          commitish: release_repo/.git/ref
+          body: release-notes/release-notes.md
+          generate_release_notes: true
+      - task: clear-release-notes
         config:
           platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: alpine/git
+              username: ((dockerhub_username))
+              password: ((dockerhub_password))
           inputs:
-            - name: config-server
+            - name: release-notes
+          outputs:
+            - name: cleared-release-notes
           run:
-            path: bash
+            path: sh
             args:
-              - -euo
-              - pipefail
               - -c
               - |
-                echo "Nothing to see here"
+                cp -r release-notes/. cleared-release-notes/
+                cd cleared-release-notes
+                > release-notes.md
+                git config user.email "bots@cloudfoundry.org"
+                git config user.name "CI Bot"
+                git add release-notes.md
+                git diff --cached --quiet || git commit -m "Clear release notes after release"
+      - put: release-notes
+        params:
+          repository: cleared-release-notes
+          rebase: true
+
+  - name: release-new-major
+    serial_groups: [version]
+    plan:
+      - put: release-version-semver
+        params:
+          bump: major
+
+  - name: release-new-minor
+    serial_groups: [version]
+    plan:
+      - put: release-version-semver
+        params:
+          bump: minor
+
+  - name: release-new-patch
+    serial_groups: [version]
+    plan:
+      - put: release-version-semver
+        params:
+          bump: patch
 
   - name: bump-deps
     plan:
@@ -273,6 +455,51 @@ resources:
     type: bosh-io-stemcell
     source:
       name: bosh-warden-boshlite-ubuntu-noble
+
+  - name: bosh-shared-ci
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry/bosh-shared-ci.git
+
+  - name: bosh-cli-image
+    type: registry-image
+    source:
+      repository: ghcr.io/cloudfoundry/bosh/cli
+      username: ((github_read_write_packages.username))
+      password: ((github_read_write_packages.password))
+
+  - name: bosh-security-scanner-image
+    type: registry-image
+    source:
+      repository: bosh/security-scanner
+      username: ((dockerhub_username))
+      password: ((dockerhub_password))
+
+  - name: release-version-semver
+    type: semver
+    source:
+      initial_version: "0.1.27"
+      driver: git
+      uri: git@github.com:cloudfoundry/config-server-release.git
+      branch: release-details
+      file: release-version
+      private_key: ((github_deploy_key_config-server.private_key))
+
+  - name: release-notes
+    type: git
+    source:
+      uri: git@github.com:cloudfoundry/config-server-release.git
+      branch: release-details
+      private_key: ((github_deploy_key_config-server.private_key))
+      paths:
+        - release-notes.md
+
+  - name: config-server-github-release
+    type: github-release
+    source:
+      owner: cloudfoundry
+      repository: config-server-release
+      access_token: ((github_public_repo_token))
 
 resource_types:
   - name: bosh-io-stemcell
