@@ -11,14 +11,12 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
-const AssetsDir string = "assets"
-const ServerStartTimeout int = 10
-const StartScript string = "./start_server.sh"
-const StopScript string = "./stop_server.sh"
-const DbSetupScript string = "./setup_db.sh"
+const DbEnvVar = "DB"
+const ServerStartTimeout = 10
 
 var HTTPSClient = createHTTPSClient()
 
@@ -49,11 +47,56 @@ func ValidToken() string {
 	return string(dat)
 }
 
-func SetupDB() {
-	db := os.Getenv("DB")
-	err := exec.Command(DbSetupScript, db).Run()
-	if err != nil {
-		panic("Failed to setup DB: " + err.Error())
+func ConfigForDb() string {
+	return fmt.Sprintf("support/assets/config.%s.json", os.Getenv(DbEnvVar))
+}
+
+func SetupDB(w io.Writer) {
+	const dbName = "config_server"
+
+	const mysqlUser = "root"
+	const mysqlPass = "password"
+
+	dbType := os.Getenv(DbEnvVar)
+	switch dbType {
+	case "memory":
+		// no-op
+	case "mysql":
+		dropDbArgs := []string{"-u", mysqlUser, fmt.Sprintf("-p%s", mysqlPass), "-e", fmt.Sprintf("drop database if exists %s;", dbName)}
+		err := exec.Command("mysql", dropDbArgs...).Run()
+		if err != nil {
+			message := fmt.Sprintf("Failed to run: mysql %s; %s", strings.Join(dropDbArgs, " "), err.Error())
+			_, _ = w.Write([]byte(message)) //nolint:errcheck
+			panic(message)
+		}
+
+		createDbArgs := []string{"-u", mysqlUser, fmt.Sprintf("-p%s", mysqlPass), "-e", fmt.Sprintf("create database if not exists %s;", dbName)}
+		err = exec.Command("mysql", createDbArgs...).Run()
+		if err != nil {
+			message := fmt.Sprintf("Failed to run: mysql %s; %s", strings.Join(createDbArgs, " "), err.Error())
+			_, _ = w.Write([]byte(message)) //nolint:errcheck
+			panic(message)
+		}
+	case "postgresql":
+		dropDbArgs := []string{"--if-exists", "-U", "postgres", dbName}
+		err := exec.Command("dropdb", dropDbArgs...).Run()
+		if err != nil {
+			message := fmt.Sprintf("Failed to run: dropdb %s; %s", strings.Join(dropDbArgs, " "), err.Error())
+			_, _ = w.Write([]byte(message)) //nolint:errcheck
+			panic(message)
+		}
+
+		createDbArgs := []string{"-U", "postgres", dbName}
+		err = exec.Command("createdb", createDbArgs...).Run()
+		if err != nil {
+			message := fmt.Sprintf("Failed to run: createdb %s; %s", strings.Join(createDbArgs, " "), err.Error())
+			_, _ = w.Write([]byte(message)) //nolint:errcheck
+			panic(message)
+		}
+	default:
+		message := fmt.Sprintf("Unexpect DB value: '%s'", dbType)
+		_, _ = w.Write([]byte(message)) //nolint:errcheck
+		panic(message)
 	}
 }
 
@@ -71,16 +114,12 @@ func WaitForServerToStart() {
 }
 
 func pathForAsset(fileName string) string {
-	var path, rootDir string
-
-	rootDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	assetsDir, err := filepath.Abs("support/assets")
 	if err != nil {
 		panic(err.Error())
 	}
 
-	path = filepath.Join(rootDir, AssetsDir, fileName)
-
-	return path
+	return filepath.Join(assetsDir, fileName)
 }
 
 func createHTTPSClient() *http.Client {

@@ -35,7 +35,7 @@ case "$DB" in
     echo "Memory DB Noop"
     ;;
   *)
-    echo "Usage: DB={mysql|postgresql|memory} $0 {commands}"
+    echo "Usage: DB={mysql|postgresql|memory} $0"
     exit 1
 esac
 

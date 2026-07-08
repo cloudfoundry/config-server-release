@@ -1,57 +1,26 @@
 #!/usr/bin/env bash
 set -eu -o pipefail
 
-export PATH=/usr/local/go/bin:${PATH}
-
-bin=$(dirname $0)
-testdir="./tmp"
-
-setup_test_dir (){
-  rm -rf ${testdir}
-  mkdir ${testdir}
-
-  cp -p "${bin}/start_server.sh" ${testdir}
-  cp -p "${bin}/stop_server.sh" ${testdir}
-  cp -p "${bin}/setup_db.sh" ${testdir}
-  cp -r ./integration/assets ${testdir}/assets
-
-  echo 'Building config-server'
-  go build .
-  cp -p config-server ${testdir}/config-server
-
-  go run github.com/onsi/ginkgo/v2/ginkgo build -r --race integration
-
-  mv ./integration/integration.test ${testdir}
-  pushd ${testdir}
-}
-
-setup_test_dir
-
+config_server_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 run_tests (){
   export DB=$1
   echo -e "\n\nRunning Integration tests for $DB\n\n"
 
-  export CONFIG_FILE="./assets/config.${DB}.json"
-  ./integration.test
+  pushd "${config_server_dir}"
+    go run github.com/onsi/ginkgo/v2/ginkgo run -r --race integration
+  popd
 }
 
-case $1 in
-    memory  )
-     run_tests memory ;;
-    mysql  )
-     run_tests mysql ;;
-    postgresql  )
-     run_tests postgresql ;;
-    * )
-     if [ -n "$1" ]; then
-        echo "usage test-integration.sh [memory|postgresql|mysql] Defaults to all"
-        exit 1
-     fi
-     run_tests memory
-     run_tests mysql
-     run_tests postgresql
-     ;;
+case "${1:-}" in
+  memory  )
+   run_tests memory ;;
+  mysql  )
+   run_tests mysql ;;
+  postgresql  )
+   run_tests postgresql ;;
+  * )
+    echo "Usage: ${0} {mysql|postgresql|memory}"
+    exit 1
+   ;;
 esac
-
-popd
