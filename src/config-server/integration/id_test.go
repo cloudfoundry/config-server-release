@@ -14,10 +14,10 @@ var _ = Describe("Supported HTTP Methods", func() {
 	var session *gexec.Session
 
 	BeforeEach(func() {
-		SetupDB()
+		SetupDB(GinkgoWriter)
 
 		var err error
-		cmd := exec.Command(pathToConfigServer, pathToConfigFile)
+		cmd := exec.Command(pathToConfigServer, ConfigForDb())
 		session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -35,7 +35,7 @@ var _ = Describe("Supported HTTP Methods", func() {
 			resultMap := UnmarshalJSONString(response.Body)
 
 			Expect(resultMap["id"]).ToNot(BeNil())
-			Expect(len((resultMap["id"].(string))) > 0).To(BeTrue())
+			Expect(len(resultMap["id"].(string)) > 0).To(BeTrue())
 			Expect(resultMap["name"]).To(Equal("Dale"))
 			Expect(resultMap["value"]).To(Equal("Wick"))
 		})
@@ -44,12 +44,12 @@ var _ = Describe("Supported HTTP Methods", func() {
 			response1, _ := SendPutRequest("Dale", "Wick") //nolint:errcheck
 			resultMap1 := UnmarshalJSONString(response1.Body)
 			Expect(resultMap1["id"]).ToNot(BeNil())
-			Expect(len((resultMap1["id"].(string))) > 0).To(BeTrue())
+			Expect(len(resultMap1["id"].(string)) > 0).To(BeTrue())
 
 			response2, _ := SendPutRequest("Alan", "Donovan") //nolint:errcheck
 			resultMap2 := UnmarshalJSONString(response2.Body)
 			Expect(resultMap2["id"]).ToNot(BeNil())
-			Expect(len((resultMap2["id"].(string))) > 0).To(BeTrue())
+			Expect(len(resultMap2["id"].(string)) > 0).To(BeTrue())
 
 			Expect(resultMap1["id"]).ToNot(Equal(resultMap2["id"]))
 		})

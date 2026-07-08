@@ -18,10 +18,10 @@ var _ = Describe("Supported HTTP Methods", func() {
 	var session *gexec.Session
 
 	BeforeEach(func() {
-		SetupDB()
+		SetupDB(GinkgoWriter)
 
 		var err error
-		cmd := exec.Command(pathToConfigServer, pathToConfigFile)
+		cmd := exec.Command(pathToConfigServer, ConfigForDb())
 		session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 		Expect(err).NotTo(HaveOccurred())
 

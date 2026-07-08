@@ -1,8 +1,6 @@
 package integration_test
 
 import (
-	"os"
-
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gexec"
@@ -12,7 +10,6 @@ import (
 
 var (
 	pathToConfigServer string
-	pathToConfigFile   string
 )
 
 func TestIntegrationTests(t *testing.T) {
@@ -26,5 +23,4 @@ var _ = SynchronizedBeforeSuite(func() []byte {
 	return []byte(configServerPath)
 }, func(data []byte) {
 	pathToConfigServer = string(data)
-	pathToConfigFile = os.Getenv("CONFIG_FILE")
 })
