@@ -3,12 +3,14 @@ set -eu -o pipefail
 
 config_server_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-export DB="${1:-"memory"}"
+[ -z "${SKIP_LINT:-}" ] && "${config_server_dir}/bin/lint"
 
-echo -e "\n Running Integration tests with datastore '${DB}'..."
+echo -e "\n Running unit tests..."
 
 (
   cd "${config_server_dir}"
+
   go run github.com/onsi/ginkgo/v2/ginkgo run -r --race --trace \
-    integration
+    --skip-package="integration" \
+    "$@"
 )
