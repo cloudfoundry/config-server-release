@@ -4,7 +4,7 @@ package serverfakes
 import (
 	"sync"
 
-	"github.com/cloudfoundry/config-server/server"
+	"code.cloudfoundry.org/config-server/server"
 )
 
 type FakeTokenValidator struct {

@@ -4,7 +4,7 @@ package storefakes
 import (
 	"sync"
 
-	"github.com/cloudfoundry/config-server/store"
+	"code.cloudfoundry.org/config-server/store"
 )
 
 type FakeDbProvider struct {
