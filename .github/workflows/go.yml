@@ -5,7 +5,6 @@ permissions:
 
 jobs:
   lint:
-    name: lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -15,3 +14,15 @@ jobs:
       - uses: golangci/golangci-lint-action@v9
         with:
           working-directory: src/config-server/
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: src/config-server/go.mod
+      - name: test
+        run: |
+          export SKIP_LINT=true 
+          src/config-server/bin/test-unit
+          src/config-server/bin/test-integration memory
