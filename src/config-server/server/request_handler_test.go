@@ -11,11 +11,11 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	. "github.com/cloudfoundry/config-server/server"
-	"github.com/cloudfoundry/config-server/store"
-	. "github.com/cloudfoundry/config-server/store/storefakes"
-	"github.com/cloudfoundry/config-server/types"
-	. "github.com/cloudfoundry/config-server/types/typesfakes"
+	. "code.cloudfoundry.org/config-server/server"
+	"code.cloudfoundry.org/config-server/store"
+	. "code.cloudfoundry.org/config-server/store/storefakes"
+	"code.cloudfoundry.org/config-server/types"
+	. "code.cloudfoundry.org/config-server/types/typesfakes"
 )
 
 func generateHTTPRequest(method, urlStr string, body io.Reader) (*http.Request, error) {

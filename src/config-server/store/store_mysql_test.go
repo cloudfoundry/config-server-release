@@ -1,12 +1,12 @@
 package store_test
 
 import (
-	. "github.com/cloudfoundry/config-server/store"
+	. "code.cloudfoundry.org/config-server/store"
 
 	"database/sql"
 	"errors"
 
-	fakes "github.com/cloudfoundry/config-server/store/storefakes"
+	fakes "code.cloudfoundry.org/config-server/store/storefakes"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
