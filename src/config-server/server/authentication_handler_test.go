@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"strings"
 
-	. "github.com/cloudfoundry/config-server/server"
-	. "github.com/cloudfoundry/config-server/server/serverfakes"
+	. "code.cloudfoundry.org/config-server/server"
+	. "code.cloudfoundry.org/config-server/server/serverfakes"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"

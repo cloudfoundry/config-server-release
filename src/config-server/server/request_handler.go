@@ -11,8 +11,8 @@ import (
 
 	"github.com/cloudfoundry/bosh-utils/errors"
 
-	"github.com/cloudfoundry/config-server/store"
-	"github.com/cloudfoundry/config-server/types"
+	"code.cloudfoundry.org/config-server/store"
+	"code.cloudfoundry.org/config-server/types"
 )
 
 type requestHandler struct {

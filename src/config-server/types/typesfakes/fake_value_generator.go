@@ -4,7 +4,7 @@ package typesfakes
 import (
 	"sync"
 
-	"github.com/cloudfoundry/config-server/types"
+	"code.cloudfoundry.org/config-server/types"
 )
 
 type FakeValueGenerator struct {

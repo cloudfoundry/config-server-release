@@ -1,7 +1,7 @@
 package types_test
 
 import (
-	. "github.com/cloudfoundry/config-server/types"
+	. "code.cloudfoundry.org/config-server/types"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"

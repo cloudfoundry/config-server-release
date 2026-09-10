@@ -1,12 +1,12 @@
 package store_test
 
 import (
-	. "github.com/cloudfoundry/config-server/store"
+	. "code.cloudfoundry.org/config-server/store"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/cloudfoundry/config-server/config"
+	"code.cloudfoundry.org/config-server/config"
 )
 
 var _ = Describe("CreateStore", func() {

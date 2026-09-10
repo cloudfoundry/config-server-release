@@ -8,10 +8,10 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/cloudfoundry/config-server/server"
-	"github.com/cloudfoundry/config-server/store"
-	. "github.com/cloudfoundry/config-server/store/storefakes"
-	"github.com/cloudfoundry/config-server/types"
+	"code.cloudfoundry.org/config-server/server"
+	"code.cloudfoundry.org/config-server/store"
+	. "code.cloudfoundry.org/config-server/store/storefakes"
+	"code.cloudfoundry.org/config-server/types"
 )
 
 var _ = Describe("x509Loader", func() {

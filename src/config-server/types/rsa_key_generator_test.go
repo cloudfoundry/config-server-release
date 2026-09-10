@@ -9,7 +9,7 @@ import (
 	. "github.com/onsi/gomega"
 	"gopkg.in/yaml.v2"
 
-	. "github.com/cloudfoundry/config-server/types"
+	. "code.cloudfoundry.org/config-server/types"
 )
 
 var _ = Describe("RSAKeyGenerator", func() {
