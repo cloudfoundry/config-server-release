@@ -1,0 +1,27 @@
+name: config-server
+version: 0.2.8
+commit_hash: b383e0f
+uncommitted_changes: false
+jobs:
+- name: config_server
+  version: 027cf16ffcda429c998147da1243cf1b81635b56e9c6ad6fac72c6d1d9ec3963
+  fingerprint: 027cf16ffcda429c998147da1243cf1b81635b56e9c6ad6fac72c6d1d9ec3963
+  sha1: sha256:3f3409d09ba0e403fcedb1a47d93fa5b555f75bc1afc3ef63b313c881adee721
+  packages:
+  - config_server
+packages:
+- name: config_server
+  version: bb9ab200b575e27bb9a12005374bebd435f95c2d060cb440fdc6f88abe977d31
+  fingerprint: bb9ab200b575e27bb9a12005374bebd435f95c2d060cb440fdc6f88abe977d31
+  sha1: sha256:a0b40c4dadeefd0dda0c7b25241ef5cbbb378ee2aaff2db8fd247d982ace7a70
+  dependencies:
+  - golang-1-linux
+- name: golang-1-linux
+  version: 613224b3e214785b31b35b8cc2699067b56bb79d3b6299e813f50f46792f438a
+  fingerprint: 613224b3e214785b31b35b8cc2699067b56bb79d3b6299e813f50f46792f438a
+  sha1: sha256:9c55f8d8924c4b1dd5480acf6a0dacaef7875db0926059d5b0b234297bea2af3
+  dependencies: []
+license:
+  version: a1838da9e1393630bf0a72da73110d2d2551b335613d12a8c15f5412d9319999
+  fingerprint: a1838da9e1393630bf0a72da73110d2d2551b335613d12a8c15f5412d9319999
+  sha1: sha256:0abd91529f2e28b684d078eb1145798ddae9e34dd4173e48e217df2329df2f28
